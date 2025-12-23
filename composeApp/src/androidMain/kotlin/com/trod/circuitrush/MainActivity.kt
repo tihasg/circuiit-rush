@@ -1,4 +1,4 @@
-package org.chouaibmo.snake
+package com.trod.circuitrush
 
 import App
 import android.os.Bundle
