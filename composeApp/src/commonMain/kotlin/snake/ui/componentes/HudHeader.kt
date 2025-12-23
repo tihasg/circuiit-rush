@@ -43,22 +43,22 @@ fun HudHeader() {
                 color = NeonCyan.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(18.dp)
             )
-            .padding(horizontal = 14.dp, vertical = 12.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Text(
             text = stringResource(Res.string.title_game),
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Black,
             color = TextPrimary,
-            letterSpacing = 2.sp
+            letterSpacing = 1.5.sp
         )
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(4.dp))
         Text(
             text = stringResource(Res.string.subtitle_game),
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             textAlign = TextAlign.Center,
             color = TextSecondary,
-            lineHeight = 16.sp
+            lineHeight = 14.sp
         )
     }
 }
@@ -71,19 +71,21 @@ fun HudScoreRow(score: Int, highScore: Int) {
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White.copy(alpha = 0.035f))
             .border(1.dp, NeonBlue.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(Res.string.label_energy).replace("%d", score.toString()),
             color = TextPrimary,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp
         )
         Spacer(Modifier.weight(1f))
         Text(
             text = stringResource(Res.string.label_max).replace("%d", highScore.toString()),
             color = TextSecondary,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            fontSize = 13.sp
         )
     }
 }

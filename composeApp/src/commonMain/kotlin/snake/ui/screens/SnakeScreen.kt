@@ -38,6 +38,7 @@ import snake.ui.componentes.GameGridNeon
 import snake.ui.componentes.HudHeader
 import snake.ui.componentes.HudScoreRow
 import snake.ui.rememberSfxController
+import snake.ui.rememberInterstitialController
 import kotlin.math.sin
 
 @Composable
@@ -52,6 +53,8 @@ fun SnakeScreen(viewModel: SnakeViewModel = viewModel { SnakeViewModel() }) {
 
     // SFX controller (KMP: expect/actual)
     val sfx = rememberSfxController()
+    // Interstitial controller (Android actual will load/show ads; other platforms no-op)
+    val interstitial = rememberInterstitialController()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -120,7 +123,7 @@ fun SnakeScreen(viewModel: SnakeViewModel = viewModel { SnakeViewModel() }) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier.fillMaxSize()
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -133,28 +136,45 @@ fun SnakeScreen(viewModel: SnakeViewModel = viewModel { SnakeViewModel() }) {
                     highScore = uiState.highScore
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
             }
 
             if (uiState.isFinished) {
                 GameOverScreen(
                     score = uiState.score,
                     highScore = uiState.highScore,
-                    onRetryClicked = { viewModel.restartGame() }
+                    onRetryClicked = {
+                        interstitial.showIfReady {
+                            viewModel.restartGame()
+                        }
+                    }
                 )
             } else {
-                // Shake aplicado no grid
+                // Shake aplicado no grid — colocar o grid logo após o HUD e usar weight para subir o grid
                 Box(
-                    modifier = Modifier.graphicsLayer {
-                        translationX = dx
-                        translationY = dy
-                    }
+                    modifier = Modifier
+                        .weight(1f),
+                    contentAlignment = Alignment.TopCenter
                 ) {
-                    GameGridNeon(uiState = uiState)
+                    Box(
+                        modifier = Modifier
+                            .graphicsLayer {
+                                translationX = dx
+                                translationY = dy
+                            }
+                    ) {
+                        GameGridNeon(uiState = uiState)
+                    }
                 }
             }
+        }
 
-            DirectionButtonsNeon(viewModel = viewModel)
+        // Place the direction buttons as an overlay anchored to bottom center
+        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+            DirectionButtonsNeon(
+                viewModel = viewModel,
+                modifier = Modifier.padding(bottom = 28.dp)
+            )
         }
 
         // Flash overlay por cima
@@ -179,6 +199,3 @@ fun SnakeScreen(viewModel: SnakeViewModel = viewModel { SnakeViewModel() }) {
         }
     }
 }
-
-
-

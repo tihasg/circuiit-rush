@@ -46,7 +46,7 @@ private class AndroidSfxController(context: Context) : SfxController {
     }
 
     override fun playGameOver() {
-        soundPool.play(gameOverId, 1f, 1f, 1, 0, 1f)
+        //soundPool.play(gameOverId, 1f, 1f, 1, 0, 1f)
     }
 
     override fun vibrateTick() = vibrateOneShot(25)

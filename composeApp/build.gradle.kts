@@ -55,6 +55,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            // Google Mobile Ads SDK for Android (AdMob interstitial)
+            implementation("com.google.android.gms:play-services-ads:22.1.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)

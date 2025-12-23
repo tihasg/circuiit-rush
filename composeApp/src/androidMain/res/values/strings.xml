@@ -1,19 +1,5 @@
 <resources>
     <string name="app_name">Circuit Rush\n</string>
-    <string name="subtitle_game">Guie a corrente e absorva energia.\nEvite encostar no próprio fluxo.</string>
-
-    <string name="label_energy">ENERGIA: %d</string>
-    <string name="label_max">MÁX: %d</string>
-
-    <string name="game_over_title">FLUXO INTERROMPIDO</string>
-    <string name="game_over_score">ENERGIA: %d</string>
-    <string name="game_over_new_high">NOVO RECORDE: %d</string>
-    <string name="btn_restart">REINICIAR</string>
-
-    <string name="cd_up">Cima</string>
-    <string name="cd_down">Baixo</string>
-    <string name="cd_left">Esquerda</string>
-    <string name="cd_right">Direita</string>
-    <string name="title_game">CIRCUIT RUSH</string>
-    <string name="cd_play_pause">Play/Pause</string>
+    <string name="admob_app_id">ca-app-pub-9197090603849099~8799720172</string>
 </resources>
+

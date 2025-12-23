@@ -3,7 +3,6 @@ package snake.ui.componentes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +27,11 @@ import snake.ui.SnakeViewModel
 // Controls neon
 // ========================
 @Composable
-fun DirectionButtonsNeon(viewModel: SnakeViewModel) {
+fun DirectionButtonsNeon(viewModel: SnakeViewModel, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = modifier
     ) {
         NeonIconButton(
             resId = Res.drawable.ic_up,
