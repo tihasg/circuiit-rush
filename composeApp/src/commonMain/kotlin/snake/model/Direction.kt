@@ -1,4 +1,4 @@
-package snake.ui
+package snake.model
 
 enum class Direction {
     UP,

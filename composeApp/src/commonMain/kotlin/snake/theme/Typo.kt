@@ -30,7 +30,7 @@ fun SnakeTypography() = Typography().run {
         titleLarge = titleLarge.copy(fontFamily = fontFamily),
         titleMedium = titleMedium.copy(fontFamily = fontFamily),
         titleSmall = titleSmall.copy(fontFamily = fontFamily),
-        bodyLarge = bodyLarge.copy(fontFamily =  fontFamily),
+        bodyLarge = bodyLarge.copy(fontFamily = fontFamily),
         bodyMedium = bodyMedium.copy(fontFamily = fontFamily),
         bodySmall = bodySmall.copy(fontFamily = fontFamily),
         labelLarge = labelLarge.copy(fontFamily = fontFamily),

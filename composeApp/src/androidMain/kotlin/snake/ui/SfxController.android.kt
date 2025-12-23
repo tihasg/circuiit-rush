@@ -1,13 +1,13 @@
 package snake.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.runtime.Composable
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
