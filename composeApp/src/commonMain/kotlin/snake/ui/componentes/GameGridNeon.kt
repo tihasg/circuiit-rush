@@ -13,12 +13,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.unit.dp
 import snake.theme.ElectricYellow
-import snake.theme.GridLine
 import snake.theme.MatteBlack
 import snake.theme.NeonBlue
 import snake.theme.NeonCyan
@@ -35,15 +33,16 @@ fun GameGridNeon(uiState: SnakeUiState) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(14.dp))
             .neonBorder()
             .background(SurfaceDark.copy(alpha = 0.92f))
-            .padding(8.dp)
+            .padding(6.dp)
             .drawBehind {
-                // Draw grid cells procedurally on the canvas for performance
+                // Simpler drawing per cell to reduce allocations and GPU work
                 val total = size.minDimension
                 val spacing = 2.dp.toPx()
                 val cellSize = (total - spacing * (gridSize - 1)) / gridSize
+                val corner = CornerRadius(cellSize * 0.12f, cellSize * 0.12f)
 
                 fun cellTopLeft(row: Int, col: Int): Offset {
                     val x = col * (cellSize + spacing)
@@ -51,7 +50,6 @@ fun GameGridNeon(uiState: SnakeUiState) {
                     return Offset(x, y)
                 }
 
-                // background for each cell and glow if snake/energy
                 for (row in 0 until gridSize) {
                     for (col in 0 until gridSize) {
                         val cell = Pair(row, col)
@@ -61,10 +59,9 @@ fun GameGridNeon(uiState: SnakeUiState) {
                         val isHead = uiState.snake.firstOrNull() == cell
 
                         val snakeSize = uiState.snake.size
-                        val minAlphaValue = 0.28f
                         val alpha = if (isBody) {
                             val current = (snakeSize - idxInSnake).toFloat() / snakeSize
-                            maxOf(current, minAlphaValue)
+                            kotlin.math.max(current, 0.28f)
                         } else 0f
 
                         val cellColor = when {
@@ -77,49 +74,22 @@ fun GameGridNeon(uiState: SnakeUiState) {
                         val topLeft = cellTopLeft(row, col)
                         val rectSize = Size(cellSize, cellSize)
 
-                        // draw base rect
+                        // Single draw per cell (fast path)
                         drawRoundRect(
-                            color = cellColor.copy(alpha = if (isBody || isHead || isEnergy) 1f else 0.95f),
+                            color = cellColor,
                             topLeft = topLeft,
                             size = rectSize,
-                            cornerRadius = CornerRadius(10f, 10f),
+                            cornerRadius = corner,
                             style = Fill
                         )
 
-                        // draw subtle trace overlay
-                        val traceBrush = Brush.linearGradient(
-                            colors = listOf(
-                                GridLine.copy(alpha = 0.15f),
-                                Color.Transparent,
-                                GridLine.copy(alpha = 0.10f)
-                            ),
-                            start = topLeft,
-                            end = Offset(topLeft.x + rectSize.width, topLeft.y + rectSize.height)
-                        )
-
-                        drawRoundRect(
-                            brush = traceBrush,
-                            topLeft = topLeft,
-                            size = rectSize,
-                            cornerRadius = CornerRadius(10f, 10f),
-                            alpha = if (isBody || isHead || isEnergy) 0.22f else 0.30f,
-                            style = Fill
-                        )
-
-                        // glow
-                        val glowColor = when {
-                            isEnergy -> ElectricYellow
-                            isHead -> NeonCyan
-                            isBody -> NeonBlue
-                            else -> Color.Transparent
-                        }
-
-                        if (glowColor != Color.Transparent) {
+                        // subtle inner highlight for head/energy to give small glow effect
+                        if (isHead || isEnergy) {
                             drawRoundRect(
-                                color = glowColor.copy(alpha = if (isEnergy) 0.42f else 0.28f),
-                                topLeft = topLeft,
-                                size = rectSize,
-                                cornerRadius = CornerRadius(10f, 10f),
+                                color = Color.White.copy(alpha = 0.06f),
+                                topLeft = Offset(topLeft.x + rectSize.width * 0.08f, topLeft.y + rectSize.height * 0.08f),
+                                size = Size(rectSize.width * 0.84f, rectSize.height * 0.84f),
+                                cornerRadius = CornerRadius(corner.x * 0.8f, corner.y * 0.8f),
                                 style = Fill
                             )
                         }
