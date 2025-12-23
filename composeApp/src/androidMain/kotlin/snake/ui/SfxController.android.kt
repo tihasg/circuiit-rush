@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import org.chouaibmo.snake.R
+import com.trod.circuitrush.R
 
 @Composable
 actual fun rememberSfxController(): SfxController {

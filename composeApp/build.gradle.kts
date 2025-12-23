@@ -74,7 +74,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.chouaibmo.snake"
+    namespace = "com.trod.circuitrush"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
