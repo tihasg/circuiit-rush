@@ -75,13 +75,13 @@ fun HudScoreRow(score: Int, highScore: Int) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(Res.string.label_energy, score),
+            text = stringResource(Res.string.label_energy).replace("%d", score.toString()),
             color = TextPrimary,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(Modifier.weight(1f))
         Text(
-            text = stringResource(Res.string.label_max, highScore),
+            text = stringResource(Res.string.label_max).replace("%d", highScore.toString()),
             color = TextSecondary,
             fontWeight = FontWeight.Medium
         )

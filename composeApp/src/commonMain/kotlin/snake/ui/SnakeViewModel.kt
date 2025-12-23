@@ -39,7 +39,7 @@ class SnakeViewModel : ViewModel() {
                 if (!uiState.value.isPaused) {
                     moveSnake()
                     checkCollisions()
-                    updateGrid()
+                    // No grid updates here — rendering will derive cells from snake/apple
                 }
             }
         }
@@ -97,17 +97,6 @@ class SnakeViewModel : ViewModel() {
             _fxEvents.tryEmit(SnakeFxEvent.GameOver)
             _uiState.value = _uiState.value.copy(isFinished = true)
         }
-    }
-
-    private fun updateGrid() {
-        val newGrid = MutableList(GRID_SIZE) { MutableList(GRID_SIZE) { false } }
-
-        for (segment in _uiState.value.snake) {
-            newGrid[segment.first][segment.second] = true
-        }
-        newGrid[_uiState.value.apple.first][_uiState.value.apple.second] = true
-
-        _uiState.value = _uiState.value.copy(grid = newGrid)
     }
 
     private fun generateRandomApple(): Pair<Int, Int> {

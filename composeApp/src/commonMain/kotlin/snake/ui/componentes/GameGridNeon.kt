@@ -1,19 +1,15 @@
 package snake.ui.componentes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -33,7 +29,7 @@ import snake.ui.SnakeUiState
 
 @Composable
 fun GameGridNeon(uiState: SnakeUiState) {
-    val gridSize = uiState.grid.size
+    val gridSize = SnakeViewModelGridSizeFallback
 
     Box(
         modifier = Modifier
@@ -43,80 +39,94 @@ fun GameGridNeon(uiState: SnakeUiState) {
             .neonBorder()
             .background(SurfaceDark.copy(alpha = 0.92f))
             .padding(8.dp)
-    ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(gridSize),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(uiState.grid.flatten().size) { index ->
-                val row = index / gridSize
-                val column = index % gridSize
-                val cell = Pair(row, column)
+            .drawBehind {
+                // Draw grid cells procedurally on the canvas for performance
+                val total = size.minDimension
+                val spacing = 2.dp.toPx()
+                val cellSize = (total - spacing * (gridSize - 1)) / gridSize
 
-                val snakeSize = uiState.snake.size
-                val headPosition = uiState.snake.first()
-
-                val minAlphaValue = 0.28f
-                val idxInSnake = uiState.snake.indexOf(cell)
-                val alpha = if (idxInSnake >= 0) {
-                    val current = (snakeSize - idxInSnake).toFloat() / snakeSize
-                    maxOf(current, minAlphaValue)
-                } else 0f
-
-                val isHead = cell == headPosition
-                val isBody = idxInSnake >= 0
-                val isEnergy = uiState.apple == cell
-
-                val cellColor = when {
-                    isHead -> NeonCyan
-                    isBody -> NeonBlue.copy(alpha = alpha)
-                    isEnergy -> ElectricYellow
-                    else -> MatteBlack
+                fun cellTopLeft(row: Int, col: Int): Offset {
+                    val x = col * (cellSize + spacing)
+                    val y = row * (cellSize + spacing)
+                    return Offset(x, y)
                 }
 
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(cellColor.copy(alpha = if (isBody || isHead || isEnergy) 1f else 0.95f))
-                        .drawWithCache {
-                            val trace = Brush.linearGradient(
-                                colors = listOf(
-                                    GridLine.copy(alpha = 0.15f),
-                                    Color.Transparent,
-                                    GridLine.copy(alpha = 0.10f)
-                                ),
-                                start = Offset(0f, 0f),
-                                end = Offset(size.width, size.height)
-                            )
+                // background for each cell and glow if snake/energy
+                for (row in 0 until gridSize) {
+                    for (col in 0 until gridSize) {
+                        val cell = Pair(row, col)
+                        val isEnergy = uiState.apple == cell
+                        val idxInSnake = uiState.snake.indexOf(cell)
+                        val isBody = idxInSnake >= 0
+                        val isHead = uiState.snake.firstOrNull() == cell
 
-                            val glowColor = when {
-                                isEnergy -> ElectricYellow
-                                isHead -> NeonCyan
-                                isBody -> NeonBlue
-                                else -> Color.Transparent
-                            }
+                        val snakeSize = uiState.snake.size
+                        val minAlphaValue = 0.28f
+                        val alpha = if (isBody) {
+                            val current = (snakeSize - idxInSnake).toFloat() / snakeSize
+                            maxOf(current, minAlphaValue)
+                        } else 0f
 
-                            onDrawBehind {
-                                drawRect(
-                                    brush = trace,
-                                    alpha = if (isBody || isHead || isEnergy) 0.22f else 0.30f
-                                )
-
-                                if (glowColor != Color.Transparent) {
-                                    drawRoundRect(
-                                        color = glowColor.copy(alpha = if (isEnergy) 0.42f else 0.28f),
-                                        cornerRadius = CornerRadius(18f, 18f),
-                                        size = Size(size.width, size.height),
-                                        style = Fill
-                                    )
-                                }
-                            }
+                        val cellColor = when {
+                            isHead -> NeonCyan
+                            isBody -> NeonBlue.copy(alpha = alpha)
+                            isEnergy -> ElectricYellow
+                            else -> MatteBlack
                         }
-                )
+
+                        val topLeft = cellTopLeft(row, col)
+                        val rectSize = Size(cellSize, cellSize)
+
+                        // draw base rect
+                        drawRoundRect(
+                            color = cellColor.copy(alpha = if (isBody || isHead || isEnergy) 1f else 0.95f),
+                            topLeft = topLeft,
+                            size = rectSize,
+                            cornerRadius = CornerRadius(10f, 10f),
+                            style = Fill
+                        )
+
+                        // draw subtle trace overlay
+                        val traceBrush = Brush.linearGradient(
+                            colors = listOf(
+                                GridLine.copy(alpha = 0.15f),
+                                Color.Transparent,
+                                GridLine.copy(alpha = 0.10f)
+                            ),
+                            start = topLeft,
+                            end = Offset(topLeft.x + rectSize.width, topLeft.y + rectSize.height)
+                        )
+
+                        drawRoundRect(
+                            brush = traceBrush,
+                            topLeft = topLeft,
+                            size = rectSize,
+                            cornerRadius = CornerRadius(10f, 10f),
+                            alpha = if (isBody || isHead || isEnergy) 0.22f else 0.30f,
+                            style = Fill
+                        )
+
+                        // glow
+                        val glowColor = when {
+                            isEnergy -> ElectricYellow
+                            isHead -> NeonCyan
+                            isBody -> NeonBlue
+                            else -> Color.Transparent
+                        }
+
+                        if (glowColor != Color.Transparent) {
+                            drawRoundRect(
+                                color = glowColor.copy(alpha = if (isEnergy) 0.42f else 0.28f),
+                                topLeft = topLeft,
+                                size = rectSize,
+                                cornerRadius = CornerRadius(10f, 10f),
+                                style = Fill
+                            )
+                        }
+                    }
+                }
             }
-        }
-    }
+    ) {}
 }
+
+private const val SnakeViewModelGridSizeFallback = 20

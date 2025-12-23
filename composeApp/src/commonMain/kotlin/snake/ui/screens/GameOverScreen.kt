@@ -19,12 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.stringResource
-import snake.composeapp.generated.resources.Res
-import snake.composeapp.generated.resources.btn_restart
-import snake.composeapp.generated.resources.game_over_new_high
-import snake.composeapp.generated.resources.game_over_score
-import snake.composeapp.generated.resources.game_over_title
 import snake.theme.ElectricYellow
 import snake.theme.TextPrimary
 import snake.theme.TextSecondary
@@ -32,10 +26,11 @@ import snake.theme.neonBorder
 
 @Composable
 fun GameOverScreen(score: Int, highScore: Int, onRetryClicked: () -> Unit) {
-    val text = if (score == highScore)
-        stringResource(Res.string.game_over_new_high, score)
-    else
-        stringResource(Res.string.game_over_score, score)
+    val text = if (score == highScore) {
+        "NOVO RECORDE: $score"
+    } else {
+        "ENERGIA: $score"
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,7 +43,7 @@ fun GameOverScreen(score: Int, highScore: Int, onRetryClicked: () -> Unit) {
             .padding(18.dp)
     ) {
         Text(
-            text = stringResource(Res.string.game_over_title),
+            text = "FLUXO INTERROMPIDO",
             fontSize = 20.sp,
             fontWeight = FontWeight.Black,
             color = TextPrimary,
@@ -64,7 +59,7 @@ fun GameOverScreen(score: Int, highScore: Int, onRetryClicked: () -> Unit) {
             colors = ButtonDefaults.buttonColors(containerColor = ElectricYellow.copy(alpha = 0.16f))
         ) {
             Text(
-                stringResource(Res.string.btn_restart),
+                "REINICIAR",
                 color = ElectricYellow,
                 fontWeight = FontWeight.Bold
             )
